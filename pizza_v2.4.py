@@ -190,6 +190,7 @@ class ModelSet():
         - epsilon(C): calculates the value of log10( C / p ) + 12
         - cPerH(C): calculates the value of log10( C / p_model ) - log10( C/ p_solar)
         - cPerFe(C): calculates the value of log10( C / Fe_model ) - log10( C / Fe_solar )
+		- eYield(isotope): Calculates the total mass of isotope lost in the winds.
         
     Examples
     --------
@@ -526,7 +527,7 @@ class ModelSet():
         """
         result = 0
         for i in range(1,len(self.model)-1):
-            result += self.model[e].iloc[i] * (self.model["total mass"].iloc[i] - self.model["total mass"].iloc[i-1]) * self.species.loc[e]["mass"]
+            result += self.model[e].iloc[i] * (self.model["total mass"].iloc[i-1] - self.model["total mass"].iloc[i]) * self.species.loc[e]["mass"]
         return result
 
 print("\n Use the grabData() function to import data. For example:\n my_model = grabData('/path/to/data/')")
