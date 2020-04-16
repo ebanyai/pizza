@@ -525,7 +525,7 @@ class ModelSet():
 
         """
         result = 0
-        for i in range(1,len(self.model)-1):
+        for i in range(2,len(self.model)-1):
             result += self.model[e].iloc[i] * (self.model["total mass"].iloc[i-1] - self.model["total mass"].iloc[i]) * self.species.loc[e]["mass"]
         return result
 
