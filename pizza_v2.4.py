@@ -82,10 +82,8 @@ def grabData(path):
     
     # grab data from interpulse file
     print("Importing the list of the recquired models...   ",end="")
-    cols_models = ["thermal pulse number","total mass","core mass","envelope mass","?","??","model number"]
-    data_models = pd.read_table(fName_models,names=cols_models,sep=" ",header=None,skipinitialspace=True)
+    data_models = pd.read_table(fName_models,sep=" ",header=0,skipinitialspace=True)
     print("DONE")
-    
     
      # grab solar abundaces 
     cols_solar = ["isotope","values","mass"]
@@ -143,8 +141,7 @@ def grabData(path):
     
     data_species.set_index("isotope", inplace = True)
     return ModelSet(needed_data,data_solar,data_species)
-    
-    
+
 
 ####################################
 ########    Function to    #########
