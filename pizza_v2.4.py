@@ -104,8 +104,8 @@ def grabData(path):
     
     # finding closest model numbers
     print("Finding closest models...   ",end="")
-    all_models = data_srf["model number"].values.astype(np.int)
-    needed_models = data_models["model number"].values.astype(np.int)
+    all_models = data_srf["model number"].values.astype(int)
+    needed_models = data_models["model number"].values.astype(int)
     closest_models = [all_models[0]]
     for model in needed_models:
         closest_models.append(min(all_models, key=lambda x:abs(x-model)))
