@@ -72,7 +72,7 @@ def grabData(path):
     global fName_species
     global fName_solar
     fName_models = path+"interpulse.dat"
-    fList = [f for f in os.listdir(path) if f.endswith(".srf")]
+    fList = sorted([f for f in os.listdir(path) if f.endswith(".srf")])
     
     # grab data from the species file
     print("Importing the list of the species...   ",end="")  
