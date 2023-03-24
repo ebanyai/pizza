@@ -71,11 +71,11 @@ def grabData(path,column_mass,column_model,ip_header=None):
     
     Example
     -------
-    >>> model = grabData("/models/m3z1.04/")    
+    >>> model = grabData("/models/m3z1.04/",0,5)    
     
     Example 2
     ---------
-    >>> model = grabData("/models/m3z1.04/",column_tm=0,column_mn=6,header=1)
+    >>> model = grabData("/models/m3z1.04/",0,6,header=1)
     """
     
     if not path.endswith("/"):
@@ -540,4 +540,4 @@ class ModelSet():
         
         return result
 
-print("\n Use the grabData() function to import data. For example:\n my_model = grabData('/path/to/data/')")
+print("\n Use the grabData() function to import data. For example:\n my_model = grabData('/path/to/data/', column_of_total_mass, column_of_model_number)")
