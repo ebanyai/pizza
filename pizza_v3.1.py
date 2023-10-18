@@ -89,20 +89,19 @@ def grabData(path,column_mass,column_model,header=None):
     # grab data from the species file
     print("Importing the list of the species...   ",end="")  
     cols_species = ["mass","element","isotope","neutrons"]    
-    data_species = pd.read_table(fName_species, names=cols_species, sep=" ", skiprows=1,header=None, skipinitialspace=True)   
+    data_species = pd.read_table(fName_species, names=cols_species, sep="\s+", skiprows=1,header=None, skipinitialspace=True)   
     print("DONE")  
     
     # grab data from interpulse file
     print("Importing the list of the recquired models...   ",end="")
-    data_models = pd.read_table(fName_models,sep=" ",header=header,skipinitialspace=True)
+    data_models = pd.read_table(fName_models,sep="\s+",header=header,skiprows=header,skipinitialspace=True)
     print("DONE")
     
      # grab solar abundaces 
     cols_solar = ["isotope","values","mass"]
-    data_solar = pd.read_table(fName_solar,names=cols_solar,sep=" ",skipinitialspace=True,index_col=None)
+    data_solar = pd.read_table(fName_solar,names=cols_solar,sep="\s+",skipinitialspace=True,index_col=None)
     dump = dict(zip(data_solar["isotope"].tolist(),data_solar["values"].tolist()))
-    data_solar = pd.DataFrame(columns=data_solar["isotope"].tolist())
-    data_solar = data_solar.append(dump,ignore_index=True)
+    data_solar = pd.DataFrame.from_dict({0:dump},orient="index")
     
     # grab data from .srf files
     frames = []
@@ -117,7 +116,6 @@ def grabData(path,column_mass,column_model,header=None):
     # finding closest model numbers
     print("Finding closest models...   ",end="")
     all_models = data_srf["model number"].values.astype(int)
-    print(all_models[::500])
     needed_models = data_models.iloc[:,column_model].values.astype(int)
     closest_models = [all_models[0]]
     for model in needed_models:
@@ -136,13 +134,12 @@ def grabData(path,column_mass,column_model,header=None):
     # get recquired models
     print("Gathering required data by model numbers... ",end="")
     dump = data_srf[data_srf["model number"].isin(closest_models)].sort_values(["model number","age"])
-    print(dump["model number"])
     sorted_data = pd.DataFrame(columns=data_srf.columns)
     
-    sorted_data = sorted_data.append(dump.iloc[[0]],ignore_index=True)
+    sorted_data = pd.concat([dump.iloc[[0]]],ignore_index=True)
     for i in range(1,len(dump)-1):
         if int(dump["model number"].iloc[[i]]) != int(dump["model number"].iloc[[i-1]]):
-           sorted_data = sorted_data.append(dump.iloc[[i]]) 
+           sorted_data = pd.concat([sorted_data,dump.iloc[[i]]]) 
     
     sorted_data["model number"] = sorted_data["model number"].astype("int64") 
     sorted_data.set_index(["model number"],inplace=True)
