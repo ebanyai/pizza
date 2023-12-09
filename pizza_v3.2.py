@@ -540,6 +540,31 @@ class ModelSet():
             result += self.model[e].iloc[i] * (self.model["total mass"].iloc[i-1] - self.model["total mass"].iloc[i]) * self.species.loc[e]["mass"]
         
         return result
+    
+    def C_SMP(self,x):
+        """
+        C_SMP = C_solar + (C_SM * x)
 
+        Parameters
+        ----------
+        x : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        None.
+
+        """
+        isotopes = self.species.index.tolist()[1:]
+        
+        result = self.model.copy(deep=True)
+        result[isotopes] = result[isotopes] * x
+        
+        temp = result[isotopes].apply(lambda x: x+self.solar.iloc[0], axis=1)
+        result[isotopes] = temp[isotopes]
+        result = result.dropna(axis=1, how='all')
+        
+        
+        return result
 
 print("\n Use the grabData() function to import data. For example:\n my_model = grabData('/path/to/data/', column_mass, column_model,header=1)")
