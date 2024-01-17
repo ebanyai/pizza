@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import re
 
 # set the float numbers' display style
 pd.options.display.float_format = '{:,.5e}'.format
@@ -521,7 +522,7 @@ class ModelSet():
         
         Parameters
         ----------
-        c: str
+        e: str
             String value of element.
             
         Returns
@@ -541,18 +542,25 @@ class ModelSet():
         
         return result
     
-    def C_SMP(self,x):
+    def cSMP(self,x):
         """
         C_SMP = C_solar + (C_SM * x)
+        
+        Calculates C_SMP for every element. Excludes elements missing from either the solar or the model abundances.
 
         Parameters
         ----------
-        x : TYPE
-            DESCRIPTION.
+        x : float
+            Value of x parameter in equation C_SMP = C_solar + (C_SM * x).
 
         Returns
         -------
-        None.
+        A pandas DataFrame.
+        
+        Examples
+        --------
+        (Assuming m is a ModelSet object.)
+        m.cSMP(0.9) --> returns  m.solar + (m.model * 0.9)
 
         """
         isotopes = self.species.index.tolist()[1:]
@@ -566,5 +574,149 @@ class ModelSet():
         
         
         return result
+    
+    def cSMPiso(self,x,iso):
+        """
+        C_SMP = C_solar[iso] + (C_SM[iso] * x)
+        
+        Calculates C_SMP for only the selected isotope.
+
+        Parameters
+        ----------
+        x : float
+            Value of x parameter in equation C_SMP = C_solar + (C_SM * x).
+        iso : string
+              String value of the isotope.
+
+        Returns
+        -------
+        A pandas DataFrame.
+        
+        Examples
+        --------
+        (Assuming m is a ModelSet object.)
+        m.cSMP(0.9,"bi209") --> returns  m.solar["b1209"] + (m.model["b1209"] * 0.9)
+
+        """
+        
+        #TODO: catch error if i is missing
+        result = pd.DataFrame()
+        result[iso] = self.model[iso] * x 
+        result[iso] = result[iso].apply(lambda x: x+self.solar[iso])
+        
+        return result
+    
+    def rSMP(self,x,iso_i,iso_j):
+        """
+        
+
+        Parameters
+        ----------
+        i : TYPE
+            DESCRIPTION.
+        j : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        None.
+
+        """
+        csmp_i = pd.DataFrame(columns=["ratio"])
+        csmp_j = pd.DataFrame(columns=["ratio"])
+        csmp_i["ratio"] = self.cSMPiso(x,iso_i)
+        csmp_j["ratio"] = self.cSMPiso(x,iso_j)
+        
+        
+        result = csmp_i / csmp_j
+        
+        return result
+    
+        
+    def rSTD(self,iso_i,iso_j):
+        """
+       
+
+        Parameters
+        ----------
+        i : TYPE
+            DESCRIPTION.
+        j : TYPE
+            DESCRIPTION.
+ 
+        Returns
+        -------
+        None.
+
+        """
+       
+        #TODO iso check
+       
+        rstd_i = pd.DataFrame(columns=["ratio"])
+        rstd_j = pd.DataFrame(columns=["ratio"])
+       
+        rstd_i["ratio"] = self.solar[iso_i]
+        rstd_j["ratio"] = self.solar[iso_j]
+        result =  rstd_i / rstd_j
+       
+        return result
+   
+    def Q(self,iso_i,iso_j,iso_k):
+        """
+        Q = (ln(i) - ln(j)) / (ln(k)- ln(j)) 
+
+        Parameters
+        ----------
+        i : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        result : TYPE
+            DESCRIPTION.
+
+        """
+        
+        i = self.getIsoNum(iso_i)
+        j = self.getIsoNum(iso_j)
+        k = self.getIsoNum(iso_k)
+        
+        result = (np.log(i) - np.log(j)) / (np.log(k) - np.log(j)) 
+        return result
+    
+    
+        
+    def epsi(self,iso_i,iso_j,iso_k,x):
+        q = self.Q(iso_i,iso_j,iso_k)
+        
+        rR_ij = self.rSMP(x,iso_i,iso_j) / self.rSTD(iso_i,iso_j)["ratio"].iloc[0]
+        rR_kj = self.rSMP(x,iso_k,iso_j) / self.rSTD(iso_k,iso_j)["ratio"].iloc[0]
+        
+        rR_kj_Q = rR_kj ** (-q)
+        
+        result =(rR_ij*rR_kj_Q - 1) * 10e+4
+        
+        return result
+    
+    
+    def epsiLin(self,iso_i,iso_j,iso_k,x):
+        q = self.Q(iso_i,iso_j,iso_k)
+        
+        rR_ij = self.rSMP(x,iso_i,iso_j) / self.rSTD(iso_i,iso_j)["ratio"].iloc[0]
+        rR_kj = self.rSMP(x,iso_k,iso_j) / self.rSTD(iso_k,iso_j)["ratio"].iloc[0]
+        
+        result = ((rR_ij-1) - q*(rR_kj-1))*10e+4
+        
+        
+        return result
+    
+        
+    def getIsoNum(self,isotope):
+        x = re.search("[0-9]+",isotope)
+        result = int(x.group())
+        
+        return result
 
 print("\n Use the grabData() function to import data. For example:\n my_model = grabData('/path/to/data/', column_mass, column_model,header=1)")
+
+
