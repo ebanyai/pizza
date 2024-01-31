@@ -205,7 +205,7 @@ class ModelSet():
         
     Examples
     --------
-    (Assuming m is a ModelSet object.)
+    # Assuming m is a ModelSet object.
     >>> m.model["c12"] --> returns a DataFrame with the values of C12 for every model numbers.
     >>> m.solar["c12"] --> returns a DataFrame withe the solar abundace value of C12
     >>> m.model["ba138"].loc[8443] --> returns the value of Ba138 in model 8443
@@ -232,7 +232,7 @@ class ModelSet():
             
         Returns
         -------
-        A pandas DataFrame.
+        result : pandas DataFrame
         
         Examples
         --------
@@ -269,11 +269,11 @@ class ModelSet():
             
         Returns
         -------
-        A pandas DataFrame.
+        ratio : pandas DataFrame
         
         Examples
         --------
-        (Assuming m is a ModelSet object.)
+        # Assuming m is a ModelSet object.f
         >>> m.ratioSol("c12") --> returns the ratio for C12 
         >>> m.ratioSol("c",summed=True) --> returns ratio for the summed isotopes of C 
         """
@@ -297,11 +297,11 @@ class ModelSet():
             
         Returns
         -------
-        A pandas DataFrame.
+        ratio : pandas DataFrame
         
         Examples
         --------
-        (Assuming m is a ModelSet object.)
+        # Assuming m is a ModelSet object.
         >>> m.ratioIni("c13") --> returns the ratio for C13
         >>> m.ratioIni("c",summed=True) --> returns ratio for the summed isotopes of C 
         """
@@ -325,11 +325,11 @@ class ModelSet():
             
         Returns
         -------
-        A pandas DataFrame.
+        ratio : pandas DataFrame
         
         Examples
         --------
-        (Assuming m is a ModelSet object.)
+        # Assuming m is a ModelSet object.
         >>> m.ratioRelSol("c13","c12") --> returns the relative ratio of C13/C12 for all model numbers 
         >>> m.ratioRelSol("ba138","ba136").loc[4020] --> returns the relative ratio of Ba138/BaC136 for model number 4020
         """
@@ -350,11 +350,11 @@ class ModelSet():
             
         Returns
         -------
-        A pandas DataFrame.
+        ratio : pandas DataFrame
         
         Examples
         --------
-        (Assuming m is a ModelSet object.)
+        # Assuming m is a ModelSet object.
         >>> m.logratioRelSol("c13","c12") --> returns the relative ratio of C13/C12 for all model numbers in log10
         >>> m.logratioRelSol("ba138","ba136").loc[4020] --> returns the relative ratio of Ba138/BaC136 in log10 for model number 4020
         """
@@ -375,11 +375,11 @@ class ModelSet():
             
         Returns
         -------
-        A pandas DataFrame.
+        result : pandas DataFrame
         
         Examples
         --------
-        (Assuming m is a ModelSet object.)
+        # Assuming m is a ModelSet object.
         >>> m.ratioTwo("c13","c12") --> returns the ratio of C13/C12 for all model numbers 
         >>> m.ratioTwo("ba138","ba136").loc[4020] --> returns the ratio of Ba138/BaC136 for model number 4020
         """
@@ -400,11 +400,11 @@ class ModelSet():
             
         Returns
         -------
-        A pandas DataFrame.
+        result : pandas DataFrame
         
         Examples
         --------
-        (Assuming m is a ModelSet object.)
+        # Assuming m is a ModelSet object.
         >>> m.delta("c13","c12") --> returns the delta value of C13/C12 for all model numbers 
         >>> m.delta("ba138","ba136").loc[4020] --> returns the delta value of Ba138/BaC136 for model number 4020
         """
@@ -427,11 +427,11 @@ class ModelSet():
 
         Returns
         -------
-        A pandas DataFrame.
+        result : pandas DataFrame
 
         Examples
         --------
-        (Assuming m is a ModelSet object.)
+        # Assuming m is a ModelSet object.
         >>> m.delta("mg26","al-6","mg24") --> returns the delta value of mg26+25*al-6 for all model numbers
         """
 
@@ -449,11 +449,11 @@ class ModelSet():
             
         Returns
         -------
-        A pandas DataFrame.
+        result : pandas DataFrame.
         
         Examples
         --------
-        (Assuming m is a ModelSet object.)
+        # Assuming m is a ModelSet object.
         >>> m.epsilon("ca") --> returns epsilon value of Ca
         >>> m.epsilon("ca").iloc[0] --> returns epsilon value of Ca for the first model in model set.
 
@@ -474,11 +474,11 @@ class ModelSet():
             
         Returns
         -------
-        A pandas DataFrame.
+        result : pandas DataFrame.
         
         Examples
         --------
-        (Assuming m is a ModelSet object.)
+        # Assuming m is a ModelSet object.
         >>> m.cPerH(2.3e-03) --> returns [C/H] for C = 2.3e-03
         >>> m.cPerH(2.3e-03).iloc[0] --> returns [C/H] for C = 2.3e-03 for the first model in model set.
 
@@ -500,11 +500,11 @@ class ModelSet():
             
         Returns
         -------
-        A pandas DataFrame.
+        result : pandas DataFrame
         
         Examples
         --------
-        (Assuming m is a ModelSet object.)
+        # Assuming m is a ModelSet object.
         >>> m.cPerFe(na) --> returns [Na/Fe] 
         >>> m.cPerFe(2.3e-03).iloc[0] --> returns [C/Fe] for C = 2.3e-03 for the first model in model set.
 
@@ -527,11 +527,11 @@ class ModelSet():
             
         Returns
         -------
-        A pandas DataFrame.
+        result : pandas DataFrame
         
         Examples
         --------
-        (Assuming m is a ModelSet object.)
+        # Assuming m is a ModelSet object.
         >>> m.eYield("fe60") --> returns sum over i for m["fe60"].iloc[i] * (m["total mass"].iloc[i] - m["total mass"].iloc[i-1]) * 60
         >>> m.eYield("pb207") --> returns sum over i for m["pb207"].iloc[i] * (m["total mass"].iloc[i] - m["total mass"].iloc[i-1]) * 207
 
@@ -555,12 +555,12 @@ class ModelSet():
 
         Returns
         -------
-        A pandas DataFrame.
+        result: pandas DataFrame
         
         Examples
         --------
-        (Assuming m is a ModelSet object.)
-        m.cSMP(0.9) --> returns  m.solar + (m.model * 0.9)
+        # Assuming m is a ModelSet object.
+        >>> m.cSMP(0.9)
 
         """
         isotopes = self.species.index.tolist()[1:]
@@ -575,57 +575,71 @@ class ModelSet():
         
         return result
     
-    def cSMPiso(self,x,iso):
+    def cSMPiso(self,x,iso,m=1):
         """
-        C_SMP = C_solar[iso] + (C_SM[iso] * x)
+        C_SMPiso(x,iso) = C_solar[iso] + (C_SM[iso] * x * m)
         
         Calculates C_SMP for only the selected isotope.
 
         Parameters
         ----------
         x : float
-            Value of x parameter in equation C_SMP = C_solar + (C_SM * x).
+            Value of x parameter in equation C_SMPiso(x,iso) = C_solar[iso] + (C_SM[iso] * x * m).
         iso : string
-              String value of the isotope.
+            String value of the isotope.
+        m : float
+            Correction value for the given isotope
 
         Returns
         -------
-        A pandas DataFrame.
+        result:  pandas DataFrame
         
         Examples
         --------
-        (Assuming m is a ModelSet object.)
-        m.cSMP(0.9,"bi209") --> returns  m.solar["b1209"] + (m.model["b1209"] * 0.9)
+        # Assuming m is a ModelSet object.
+        >>> m.cSMP(0.9,"bi209")
 
         """
         
-        #TODO: catch error if i is missing
-        result = pd.DataFrame()
-        result[iso] = self.model[iso] * x 
-        result[iso] = result[iso].apply(lambda x: x+self.solar[iso])
         
-        return result
+        try:
+            result = pd.DataFrame()
+            result[iso] = self.model[iso] * x * m
+            #result[iso] = result[iso].apply(lambda x: x+self.solar[iso])
+            result[iso] = result[iso] + self.solar[iso].iloc[0]
+            return result
+        except KeyError:
+            print("Isotope {} is missing.".format(iso))
+        
     
-    def rSMP(self,x,iso_i,iso_j):
+    def rSMP(self,x,iso_i,iso_j,m_i=1,m_j=1):
         """
+        rSMP(x,iso_i,iso_j) = C_SMPiso(x,iso_i) / C_SMPiso(x,iso_j)
         
+        Calculates the ratio of C_SMPiso(iso_i) and C_SMPiso(iso_j). 
 
         Parameters
         ----------
-        i : TYPE
-            DESCRIPTION.
-        j : TYPE
-            DESCRIPTION.
+        x : float
+            Value of x parameter in equation C_SMPiso = C_solar[iso] + (C_SM[iso] * x).
+        iso_i, iso_j : string
+            String values of isotopes (i, j)
+        m_i, m_j : float
+            Correction value for the given isotope
 
         Returns
         -------
-        None.
-
+        result : pandas DataFrame
+        
+        Examples
+        --------
+        # Assuming m is a ModelSet object.
+        >>> m.rSMP(1.9,"pb205","pb206")
         """
         csmp_i = pd.DataFrame(columns=["ratio"])
         csmp_j = pd.DataFrame(columns=["ratio"])
-        csmp_i["ratio"] = self.cSMPiso(x,iso_i)
-        csmp_j["ratio"] = self.cSMPiso(x,iso_j)
+        csmp_i["ratio"] = self.cSMPiso(x,iso_i,m=m_i)
+        csmp_j["ratio"] = self.cSMPiso(x,iso_j,m=m_j)
         
         
         result = csmp_i / csmp_j
@@ -635,18 +649,23 @@ class ModelSet():
         
     def rSTD(self,iso_i,iso_j):
         """
-       
+        rSTD(iso_i,iso_j) = STD(iso_i) / STD(iso_j)
+        
+        Calculates the ratio of solar abundance of iso_i and iso_j.
 
         Parameters
         ----------
-        i : TYPE
-            DESCRIPTION.
-        j : TYPE
-            DESCRIPTION.
+        iso_i, iso_j : string
+            String values of isotopes (i, j)
  
         Returns
         -------
-        None.
+        result : pandas DataFrame.
+        
+        Examples
+        --------
+        # Assuming m is a ModelSet object.
+        >>> m.rSTD(1.9,"pb205","pb206")
 
         """
        
@@ -663,18 +682,24 @@ class ModelSet():
    
     def Q(self,iso_i,iso_j,iso_k):
         """
+        Substracts i, j and k values from the isotope names. Then calculates 
         Q = (ln(i) - ln(j)) / (ln(k)- ln(j)) 
 
         Parameters
         ----------
-        i : TYPE
-            DESCRIPTION.
+        iso_i, iso_j, iso_k : string
+            String values of isotopes (i, j, k)
 
         Returns
         -------
-        result : TYPE
-            DESCRIPTION.
-
+        result : float
+            
+        
+        Examples
+        --------
+        # Assuming m is a ModelSet object.
+        >>> m.Q("pb205","pb206","pb204")
+        0.4987804829683338
         """
         
         i = self.getIsoNum(iso_i)
@@ -686,11 +711,36 @@ class ModelSet():
     
     
         
-    def epsi(self,iso_i,iso_j,iso_k,x):
+    def epsi(self,iso_i,iso_j,iso_k,x,m_i=1,m_j=1,m_k=1):
+        """
+        epsi(iso_i,iso_j,iso_k,x) = [ rSMP(iso_i,iso_j) / rSTD(iso_i,iso_j) *
+                                      rSMP(iso_k,iso_j) / rSTD(iso_k,iso_j)^(-Q) ] * 10^4
+
+        Parameters
+        ----------
+        iso_i, iso_j, iso_k : string
+            String values of isotopes (i, j, k)
+        x : float
+            Value of x parameter in equation C_SMPiso(x,iso) = C_solar[iso] + (C_SM[iso] * x * m).
+        m_i,m_j_,m_k: float
+            multiplication value for iso_i, iso_j and iso_k
+
+        Returns
+        -------
+        result : pandas DataFrame
+        
+        Examples
+        --------
+        # Assuming m is a ModelSet object.
+        >>> m.epsi("pb208","pb207","bi209",0.8)
+        
+        >>> m.epsi("pb208","pb207","bi209",0.8,m_i=1.3,m_k=0.4)
+            
+        """
         q = self.Q(iso_i,iso_j,iso_k)
         
-        rR_ij = self.rSMP(x,iso_i,iso_j) / self.rSTD(iso_i,iso_j)["ratio"].iloc[0]
-        rR_kj = self.rSMP(x,iso_k,iso_j) / self.rSTD(iso_k,iso_j)["ratio"].iloc[0]
+        rR_ij = self.rSMP(x,iso_i,iso_j,m_i=m_i,m_j=m_j) / self.rSTD(iso_i,iso_j)["ratio"].iloc[0]
+        rR_kj = self.rSMP(x,iso_k,iso_j,m_i=m_k,m_j=m_j) / self.rSTD(iso_k,iso_j)["ratio"].iloc[0]
         
         rR_kj_Q = rR_kj ** (-q)
         
@@ -699,11 +749,36 @@ class ModelSet():
         return result
     
     
-    def epsiLin(self,iso_i,iso_j,iso_k,x):
+    def epsiLin(self,iso_i,iso_j,iso_k,x,m_i=1,m_j=1,m_k=1):
+        """
+        epsi(iso_i,iso_j,iso_k,x) = [ (rSMP(iso_i,iso_j) / rSTD(iso_i,iso_j) - 1) -
+                                      Q * (rSMP(iso_k,iso_j) / rSTD(iso_k,iso_j)) -1) ] * 10^4
+
+        Parameters
+        ----------
+        iso_i, iso_j, iso_k : string
+            String values of isotopes (i, j, k)
+        x : float
+            Value of x parameter in equation C_SMPiso(x,iso) = C_solar[iso] + (C_SM[iso] * x * m).
+        m_i,m_j_,m_k: float
+            multiplication value for iso_i, iso_j and iso_k
+        
+
+        Returns
+        -------
+        result : pandas DataFrame
+            
+        Examples
+        --------
+        # Assuming m is a ModelSet object.
+        >>> m.epsiLin("pb208","pb207","bi209",0.8)
+        
+        >>> m.epsiLin("pb208","pb207","bi209",0.8,m_i=1.3,m_k=0.4)
+        """
         q = self.Q(iso_i,iso_j,iso_k)
         
-        rR_ij = self.rSMP(x,iso_i,iso_j) / self.rSTD(iso_i,iso_j)["ratio"].iloc[0]
-        rR_kj = self.rSMP(x,iso_k,iso_j) / self.rSTD(iso_k,iso_j)["ratio"].iloc[0]
+        rR_ij = self.rSMP(x,iso_i,iso_j,m_i=m_i,m_j=m_j) / self.rSTD(iso_i,iso_j)["ratio"].iloc[0]
+        rR_kj = self.rSMP(x,iso_k,iso_j,m_i=m_k,m_j=m_j) / self.rSTD(iso_k,iso_j)["ratio"].iloc[0]
         
         result = ((rR_ij-1) - q*(rR_kj-1))*10e+4
         
@@ -712,11 +787,48 @@ class ModelSet():
     
         
     def getIsoNum(self,isotope):
+        """
+        Substracts the isotope number from the isotope string.
+
+        Parameters
+        ----------
+        isotope : string
+            String value of the isotope.
+
+        Returns
+        -------
+        result : int
+            
+        Examples
+        --------
+        >>> m.getIsoNum("pb205")
+        205
+
+        """
         x = re.search("[0-9]+",isotope)
         result = int(x.group())
         
         return result
+    
+    def addIsotope(self,iso_name,iso_value):
+        """
+        
+
+        Parameters
+        ----------
+        iso_name : string
+            string value of isotope.
+        iso_value : float
+            abundance value of the isotope.
+
+        Returns
+        -------
+        None.
+
+        """
+        self.model[iso_name] = iso_value
+        return
+
+    
 
 print("\n Use the grabData() function to import data. For example:\n my_model = grabData('/path/to/data/', column_mass, column_model,header=1)")
-
-
