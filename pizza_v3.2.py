@@ -51,7 +51,7 @@ def table(objs):
 ##########   Get Data   ############
 ####################################
 
-def grabData(path,column_mass,column_model,header=None):
+def grabData(path,column_mass,column_envelope,column_model,header=None):
     """ 
     A function to import the solar abundances, the list of species, the recquired model numbers
     and the .srf files for the given model data set.
@@ -61,6 +61,8 @@ def grabData(path,column_mass,column_model,header=None):
     Parameters
     ----------
     column_mass: Index of the column containing the total mass in the interpulse.dat file
+
+    column_envelope: Index of the column containing the envelope mass in the interpulse.dat file
     
     column_model: Index of the column containing the model number in the interpulse.dat file
     
@@ -72,11 +74,11 @@ def grabData(path,column_mass,column_model,header=None):
     
     Example
     -------
-    >>> model = grabData("/models/m3z1.04/",0,5)    
+    >>> model = grabData("/models/m3z1.04/",0,2,5,)    
     
     Example 2
     ---------
-    >>> model = grabData("/models/m3z1.04/",0,6,header=1)
+    >>> model = grabData("/models/m3z1.04/",1,3,6,header=1)
     """
     
     if not path.endswith("/"):
@@ -142,7 +144,7 @@ def grabData(path,column_mass,column_model,header=None):
     
     sorted_data = pd.concat([dump.iloc[[0]]],ignore_index=True)
     for i in range(1,len(dump)-1):
-        if int(dump["model number"].iloc[[i]]) != int(dump["model number"].iloc[[i-1]]):
+        if int(dump["model number"].iloc[i]) != int(dump["model number"].iloc[i-1]):
            sorted_data = pd.concat([sorted_data,dump.iloc[[i]]]) 
     
     sorted_data["model number"] = sorted_data["model number"].astype("int64") 
@@ -154,7 +156,8 @@ def grabData(path,column_mass,column_model,header=None):
     print(closest_models,"\n")
     
     data_species.set_index("isotope", inplace = True)
-    return ModelSet(needed_data,data_solar,data_species)
+    envelope_mass = data_models.iloc[:,column_envelope]
+    return ModelSet(needed_data,data_solar,data_species,envelope_mass)
 
 
 ####################################
@@ -212,12 +215,13 @@ class ModelSet():
     >>> m.model["ba136"].iloc[10] --> returns the value of Ba136 in the 11th row of the model set
     """
     
-    def __init__(self,models_df,solar_df,species_df):
+    def __init__(self,models_df,solar_df,species_df,envelope_mass):
         """Initializing class with two attributes: model and solar."""
         
         self.model = models_df
         self.solar = solar_df
         self.species = species_df
+        self.envelope_mass = envelope_mass
     
     def sumIsotopes(self,element,solar=False):
         """ 
@@ -538,8 +542,9 @@ class ModelSet():
         """
         result = 0
         for i in range(2,len(self.model)-1):
-            result += self.model[e].iloc[i] * (self.model["total mass"].iloc[i-1] - self.model["total mass"].iloc[i]) * self.species.loc[e]["mass"]
-        
+            env_mass = self.model[e].iloc[-1] *  self.envelope_mass.iloc[-1]*self.species.loc[e]["mass"]
+            tot_mass = self.model[e].iloc[i] * (self.model["total mass"].iloc[i-1] - self.model["total mass"].iloc[i]) * self.species.loc[e]["mass"]
+            result = tot_mass + env_mass
         return result
     
     def cSMP(self,x):
